@@ -10,7 +10,8 @@ from mjlab.utils.spec_config import ContactSensorCfg
 @dataclass
 class G1BalancingEnvCfg(BalancingEnvCfg):
   def __post_init__(self):
-    # Configure contact sensors for both feet
+    # Configure contact sensors for feet only
+    # These detect which foot is on the ground vs off the ground
     foot_contact_sensors = [
       ContactSensorCfg(
         name=f"{side}_foot_ground_contact",
@@ -22,34 +23,17 @@ class G1BalancingEnvCfg(BalancingEnvCfg):
       )
       for side in ["left", "right"]
     ]
+    
     g1_cfg = replace(G1_ROBOT_CFG, sensors=tuple(foot_contact_sensors))
 
     self.scene.entities = {"robot": g1_cfg}
     self.actions.joint_pos.scale = G1_ACTION_SCALE
 
-    # Configure foot friction randomization
-    self.events.foot_friction = None  # Disable for simplicity in balancing task
-
-    # Configure joint posture reward with standard deviations
-    self.rewards.joint_posture.params["std"] = {
-      # Lower body - allow more flexibility for balancing
-      r".*hip_pitch.*": 0.4,
-      r".*hip_roll.*": 0.2,
-      r".*hip_yaw.*": 0.2,
-      r".*knee.*": 0.5,  # More flexibility for raised knee
-      r".*ankle_pitch.*": 0.3,
-      r".*ankle_roll.*": 0.15,
-      # Waist - keep relatively stable
-      r".*waist_yaw.*": 0.15,
-      r".*waist_roll.*": 0.1,
-      r".*waist_pitch.*": 0.1,
-      # Arms - allow movement for balance
-      r".*shoulder_pitch.*": 0.4,
-      r".*shoulder_roll.*": 0.2,
-      r".*shoulder_yaw.*": 0.15,
-      r".*elbow.*": 0.3,
-      r".*wrist.*": 0.4,
-    }
+    # Disable pushes initially - robot needs to learn lifting in stable conditions first
+    self.events.push_robot = None
+    
+    # Disable foot friction randomization
+    self.events.foot_friction = None
 
     self.viewer.body_name = "torso_link"
 

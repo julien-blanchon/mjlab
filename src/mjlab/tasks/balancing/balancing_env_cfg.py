@@ -82,8 +82,6 @@ class ObservationCfg:
       noise=Unoise(n_min=-1.5, n_max=1.5),
     )
     actions: ObsTerm = term(ObsTerm, func=mdp.last_action)
-    standing_leg: ObsTerm = term(ObsTerm, func=mdp.standing_leg_indicator)
-    raised_knee_height: ObsTerm = term(ObsTerm, func=mdp.raised_knee_height)
 
     def __post_init__(self):
       self.enable_corruption = True
@@ -125,66 +123,74 @@ class EventCfg:
     mode="reset",
     params={},
   )
-  push_robot: EventTerm | None = term(
+  # Gentle pushes to encourage robust balance recovery
+  push_robot: EventTerm = term(
     EventTerm,
     func=mdp.push_by_setting_velocity,
     mode="interval",
-    interval_range_s=(2.0, 4.0),
-    params={"velocity_range": {"x": (-0.3, 0.3), "y": (-0.3, 0.3)}},
+    interval_range_s=(8.0, 12.0),  # Infrequent - every 8-12 seconds
+    params={
+      "velocity_range": {
+        "x": (-0.2, 0.2),      # Gentle linear pushes
+        "y": (-0.2, 0.2),
+        "yaw": (-0.1, 0.1),    # Gentle rotational disturbance
+      }
+    },
   )
+  # Foot friction randomization disabled for stable learning
+  foot_friction: EventTerm | None = None
 
 
 @dataclass
 class RewardCfg:
-  alive: RewardTerm = term(
-    RewardTerm,
-    func=mdp.alive_bonus,
-    weight=1.0,
-  )
-  knee_height: RewardTerm = term(
-    RewardTerm,
-    func=mdp.knee_height_above_threshold,
-    weight=2.0,
-    params={"threshold": 0.4, "std": 0.1},
-  )
+  # 1. Stay UPRIGHT - Most important for classical yoga pose
   upright: RewardTerm = term(
     RewardTerm,
     func=mdp.upright_posture,
-    weight=0.5,
+    weight=3.0,  # HIGHEST - must maintain vertical orientation
   )
-  base_stability: RewardTerm = term(
+  
+  # 2. Raise FOOT to MODERATE height (tree pose range)
+  # NOTE: Measures foot/ankle height, not knee (prevents bending knee exploit)
+  foot_height: RewardTerm = term(
     RewardTerm,
-    func=mdp.base_stability,
-    weight=-0.05,
-  )
-  joint_posture: RewardTerm = term(
-    RewardTerm,
-    func=mdp.joint_posture,
-    weight=0.3,
+    func=mdp.raised_foot_height_optimal_range,
+    weight=3.5,  # Increased to push for higher lift
     params={
-      "asset_cfg": SceneEntityCfg("robot", joint_names=[".*"]),
-      "std": [],
+      "min_height": 0.10,      # Start earlier (4 inches)
+      "optimal_height": 0.25,  # Sweet spot (10 inches - classical tree pose)
+      "max_height": 0.40,      # Higher limit before penalty (16 inches)
     },
   )
-  action_rate_l2: RewardTerm = term(RewardTerm, func=mdp.action_rate_l2, weight=-0.01)
-  joint_pos_limits: RewardTerm = term(RewardTerm, func=mdp.joint_pos_limits, weight=-1.0)
+  
+  # 3. Get one foot off ground (standing foot must stay on ground)
+  foot_clearance: RewardTerm = term(
+    RewardTerm,
+    func=mdp.foot_clearance,
+    weight=1.5,  # Initial signal to lift
+  )
+  
+  # PENALTIES: Encourage static balance
+  static_stance: RewardTerm = term(
+    RewardTerm,
+    func=mdp.static_stance_penalty,
+    weight=-0.5,  # Penalize horizontal movement (walking on one foot)
+  )
+  action_rate_l2: RewardTerm = term(
+    RewardTerm, 
+    func=mdp.action_rate_l2, 
+    weight=-0.01
+  )
 
 
 @dataclass
 class TerminationCfg:
+  # Time out after episode length
   time_out: DoneTerm = term(DoneTerm, func=mdp.time_out, time_out=True)
+  
+  # Terminate if robot tilts too much (lenient to allow exploration)
   fell_over: DoneTerm = term(
     DoneTerm, func=mdp.bad_orientation, params={"limit_angle": math.radians(70.0)}
-  )
-  raised_foot_contact: DoneTerm = term(
-    DoneTerm,
-    func=mdp.raised_foot_contact,
-    params={},
-  )
-  root_too_low: DoneTerm = term(
-    DoneTerm,
-    func=mdp.root_height_below_minimum,
-    params={"minimum_height": 0.3},
   )
 
 
@@ -216,5 +222,5 @@ class BalancingEnvCfg(ManagerBasedRlEnvCfg):
   sim: SimulationCfg = field(default_factory=lambda: SIM_CFG)
   viewer: ViewerConfig = field(default_factory=lambda: VIEWER_CONFIG)
   decimation: int = 4  # 50 Hz control frequency.
-  episode_length_s: float = 10.0  # Allows transition + 5s balance
+  episode_length_s: float = 20.0  # Sufficient time to learn and maintain single-leg stance
 
