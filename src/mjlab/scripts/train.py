@@ -11,6 +11,8 @@ import gymnasium as gym
 import tyro
 
 from mjlab.rl import RslRlOnPolicyRunnerCfg, RslRlVecEnvWrapper
+from mjlab.tasks.balancing.balancing_env_cfg import BalancingEnvCfg
+from mjlab.tasks.balancing.rl import BalancingOnPolicyRunner
 from mjlab.tasks.tracking.rl import MotionTrackingOnPolicyRunner
 from mjlab.tasks.tracking.tracking_env_cfg import TrackingEnvCfg
 from mjlab.tasks.velocity.rl import VelocityOnPolicyRunner
@@ -89,6 +91,8 @@ def run_train(task: str, cfg: TrainConfig) -> None:
     runner = MotionTrackingOnPolicyRunner(
       env, agent_cfg, str(log_dir), cfg.device, registry_name
     )
+  elif isinstance(cfg.env, BalancingEnvCfg):
+    runner = BalancingOnPolicyRunner(env, agent_cfg, str(log_dir), cfg.device)
   else:
     runner = VelocityOnPolicyRunner(env, agent_cfg, str(log_dir), cfg.device)
 
