@@ -147,7 +147,7 @@ class RewardCfg:
   upright: RewardTerm = term(
     RewardTerm,
     func=mdp.upright_posture,
-    weight=3.0,  # HIGHEST - must maintain vertical orientation
+    weight=1.0,  # HIGHEST - must maintain vertical orientation
   )
   
   # 2. Raise FOOT to MODERATE height (tree pose range)

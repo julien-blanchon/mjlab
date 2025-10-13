@@ -29,11 +29,9 @@ class G1BalancingEnvCfg(BalancingEnvCfg):
     self.scene.entities = {"robot": g1_cfg}
     self.actions.joint_pos.scale = G1_ACTION_SCALE
 
-    # Disable pushes initially - robot needs to learn lifting in stable conditions first
-    self.events.push_robot = None
-    
-    # Disable foot friction randomization
-    self.events.foot_friction = None
+    # Pushes are ENABLED (defined in parent balancing_env_cfg.py)
+    # Every 8-12s with ±0.2 m/s for robustness training
+    # No need to override here - using parent config
 
     self.viewer.body_name = "torso_link"
 
