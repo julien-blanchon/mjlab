@@ -1,9 +1,47 @@
-"""RL configuration for G1 single-leg balancing task.
+"""RL configuration for G1 single-leg balancing task."""
 
-Reuses the PPO configuration from the G1 tracking task.
-"""
+from dataclasses import dataclass, field
 
-from mjlab.tasks.tracking.config.g1.rl_cfg import G1FlatPPORunnerCfg
+from mjlab.rl import (
+  RslRlOnPolicyRunnerCfg,
+  RslRlPpoActorCriticCfg,
+  RslRlPpoAlgorithmCfg,
+)
 
-__all__ = ["G1FlatPPORunnerCfg"]
 
+@dataclass
+class G1BalancingPPORunnerCfg(RslRlOnPolicyRunnerCfg):
+  policy: RslRlPpoActorCriticCfg = field(
+    default_factory=lambda: RslRlPpoActorCriticCfg(
+      init_noise_std=1.0,
+      actor_obs_normalization=False,  # ← DISABLED for browser compatibility!
+      critic_obs_normalization=False,  # ← DISABLED for browser compatibility!
+      actor_hidden_dims=(512, 256, 128),
+      critic_hidden_dims=(512, 256, 128),
+      activation="elu",
+    )
+  )
+  algorithm: RslRlPpoAlgorithmCfg = field(
+    default_factory=lambda: RslRlPpoAlgorithmCfg(
+      value_loss_coef=1.0,
+      use_clipped_value_loss=True,
+      clip_param=0.2,
+      entropy_coef=0.005,
+      num_learning_epochs=5,
+      num_mini_batches=4,
+      learning_rate=1.0e-3,
+      schedule="adaptive",
+      gamma=0.99,
+      lam=0.95,
+      desired_kl=0.01,
+      max_grad_norm=1.0,
+    )
+  )
+  experiment_name: str = "g1_balancing"  # ← Changed from "g1_tracking"
+  save_interval: int = 500
+  num_steps_per_env: int = 24
+  max_iterations: int = 30_000
+
+
+# Export with the new name
+__all__ = ["G1BalancingPPORunnerCfg"]
