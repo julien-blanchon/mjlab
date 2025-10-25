@@ -16,4 +16,17 @@ def configure_warp() -> None:
   wp.config.quiet = quiet
 
 
+def _load_mjlab_env_plugins() -> None:
+  try:
+    from importlib.metadata import entry_points
+  except Exception:  # pragma: no cover
+    return
+  for ep in entry_points().select(group="mjlab.envs"):
+    try:
+      ep.load()  # import module; its __init__ registers envs
+    except Exception as e:
+      print(f"[mjlab] Failed to load plugin {ep.name}: {e}")
+
+
 configure_warp()
+_load_mjlab_env_plugins()
