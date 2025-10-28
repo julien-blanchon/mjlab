@@ -955,6 +955,7 @@ dependencies = [
     { name = "moviepy" },
     { name = "mujoco" },
     { name = "mujoco-warp" },
+    { name = "onnxscript" },
     { name = "prettytable" },
     { name = "rsl-rl-lib" },
     { name = "tensorboard" },
@@ -993,7 +994,8 @@ requires-dist = [
     { name = "gymnasium", specifier = "==1.2.1" },
     { name = "moviepy" },
     { name = "mujoco", index = "https://py.mujoco.org/" },
-    { name = "mujoco-warp", git = "https://github.com/google-deepmind/mujoco_warp?rev=486642c3fa262a989b482e0e506716d5793d61a9" },
+    { name = "mujoco-warp", git = "https://github.com/google-deepmind/mujoco_warp?rev=fb9bf88399796f161a4a2b129d846484da8a4ad0" },
+    { name = "onnxscript", specifier = ">=0.5.4" },
     { name = "prettytable" },
     { name = "rsl-rl-lib" },
     { name = "tensorboard", specifier = ">=2.20.0" },
@@ -1148,7 +1150,7 @@ wheels = [
 [[package]]
 name = "mujoco-warp"
 version = "0.0.1"
-source = { git = "https://github.com/google-deepmind/mujoco_warp?rev=486642c3fa262a989b482e0e506716d5793d61a9#486642c3fa262a989b482e0e506716d5793d61a9" }
+source = { git = "https://github.com/google-deepmind/mujoco_warp?rev=fb9bf88399796f161a4a2b129d846484da8a4ad0#fb9bf88399796f161a4a2b129d846484da8a4ad0" }
 dependencies = [
     { name = "absl-py" },
     { name = "etils", extra = ["epath"] },
@@ -1539,6 +1541,40 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/60/f1/22ee4d8b8f9fa4cb1d1b9579da3b4b5187ddab33846ec5ac744af02c0e2b/onnx-1.19.1-cp313-cp313t-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:07dcd4d83584eb4bf8f21ac04c82643712e5e93ac2a0ed10121ec123cb127e1e", size = 18047830, upload-time = "2025-10-10T04:01:06.552Z" },
     { url = "https://files.pythonhosted.org/packages/8e/a4/8f3d51e3a095d42cdf2039a590cff06d024f2a10efbd0b1a2a6b3825f019/onnx-1.19.1-cp313-cp313t-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:1975860c3e720db25d37f1619976582828264bdcc64fa7511c321ac4fc01add3", size = 18221126, upload-time = "2025-10-10T04:01:09.77Z" },
     { url = "https://files.pythonhosted.org/packages/4f/0d/f9d6c2237083f1aac14b37f0b03b0d81f1147a8e2af0c3828165e0a6a67b/onnx-1.19.1-cp313-cp313t-win_amd64.whl", hash = "sha256:9807d0e181f6070ee3a6276166acdc571575d1bd522fc7e89dba16fd6e7ffed9", size = 16465560, upload-time = "2025-10-10T04:01:13.212Z" },
+]
+
+[[package]]
+name = "onnx-ir"
+version = "0.1.11"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "ml-dtypes" },
+    { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11' or (extra == 'group-5-mjlab-cpu' and extra == 'group-5-mjlab-cu128')" },
+    { name = "numpy", version = "2.3.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11' or (extra == 'group-5-mjlab-cpu' and extra == 'group-5-mjlab-cu128')" },
+    { name = "onnx" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/4b/c4/d7c52d89120ae2d90025bf30999f44ec029bb297be706ada81a2b7ce3e73/onnx_ir-0.1.11.tar.gz", hash = "sha256:05fd55f7548f4301a17476c53e19c16f92f4fc4c0f468fcd8d3afb6869f8ae75", size = 112093, upload-time = "2025-10-15T22:20:46.785Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/3a/de/a9bb49f36e2d27ff2b1941972ce01838c9032155256e3380960c6f545455/onnx_ir-0.1.11-py3-none-any.whl", hash = "sha256:f23edd0d3f49b92abfab275625cb325da3978f5b41ba8cdaa28e85e87b44d2c1", size = 128694, upload-time = "2025-10-15T22:20:45.208Z" },
+]
+
+[[package]]
+name = "onnxscript"
+version = "0.5.4"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "ml-dtypes" },
+    { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11' or (extra == 'group-5-mjlab-cpu' and extra == 'group-5-mjlab-cu128')" },
+    { name = "numpy", version = "2.3.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11' or (extra == 'group-5-mjlab-cpu' and extra == 'group-5-mjlab-cu128')" },
+    { name = "onnx" },
+    { name = "onnx-ir" },
+    { name = "packaging" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/b2/88/c3fad7bcb0f57c6f7795e28c479545cd47ca9109b174765f7cca0121148e/onnxscript-0.5.4.tar.gz", hash = "sha256:311e08ce513484a1fadfc19f3ad28f83ed41a8ce73eca4d038cd3623f6f52104", size = 584052, upload-time = "2025-10-16T17:55:27.615Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/9d/b2/bd42c04bd731769667df20de57f80b9753dbffb72bb24fddf4bb87a65433/onnxscript-0.5.4-py3-none-any.whl", hash = "sha256:640d2aa55364b9b0d66c280cc4b22cd2c918fde9a1a72c2460d2fbe24b9181dc", size = 679346, upload-time = "2025-10-16T17:55:29.886Z" },
 ]
 
 [[package]]
@@ -1964,15 +2000,15 @@ wheels = [
 
 [[package]]
 name = "pyright"
-version = "1.1.406"
+version = "1.1.407"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "nodeenv" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/f7/16/6b4fbdd1fef59a0292cbb99f790b44983e390321eccbc5921b4d161da5d1/pyright-1.1.406.tar.gz", hash = "sha256:c4872bc58c9643dac09e8a2e74d472c62036910b3bd37a32813989ef7576ea2c", size = 4113151, upload-time = "2025-10-02T01:04:45.488Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/a6/1b/0aa08ee42948b61745ac5b5b5ccaec4669e8884b53d31c8ec20b2fcd6b6f/pyright-1.1.407.tar.gz", hash = "sha256:099674dba5c10489832d4a4b2d302636152a9a42d317986c38474c76fe562262", size = 4122872, upload-time = "2025-10-24T23:17:15.145Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/f6/a2/e309afbb459f50507103793aaef85ca4348b66814c86bc73908bdeb66d12/pyright-1.1.406-py3-none-any.whl", hash = "sha256:1d81fb43c2407bf566e97e57abb01c811973fdb21b2df8df59f870f688bdca71", size = 5980982, upload-time = "2025-10-02T01:04:43.137Z" },
+    { url = "https://files.pythonhosted.org/packages/dc/93/b69052907d032b00c40cb656d21438ec00b3a471733de137a3f65a49a0a0/pyright-1.1.407-py3-none-any.whl", hash = "sha256:6dd419f54fcc13f03b52285796d65e639786373f433e243f8b94cf93a7444d21", size = 5997008, upload-time = "2025-10-24T23:17:13.159Z" },
 ]
 
 [[package]]
@@ -3159,17 +3195,17 @@ wheels = [
 
 [[package]]
 name = "warp-lang"
-version = "1.11.0.dev20251021"
+version = "1.11.0.dev20251027"
 source = { registry = "https://pypi.nvidia.com/" }
 dependencies = [
     { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11' or (extra == 'group-5-mjlab-cpu' and extra == 'group-5-mjlab-cu128')" },
     { name = "numpy", version = "2.3.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11' or (extra == 'group-5-mjlab-cpu' and extra == 'group-5-mjlab-cu128')" },
 ]
 wheels = [
-    { url = "https://pypi.nvidia.com/warp-lang/warp_lang-1.11.0.dev20251021-py3-none-macosx_11_0_arm64.whl", hash = "sha256:76b9b739ca0d5227a32cff8a08cfd28339c1ad9cfd96f10a0eb850a8d43d0f32" },
-    { url = "https://pypi.nvidia.com/warp-lang/warp_lang-1.11.0.dev20251021-py3-none-manylinux_2_28_x86_64.whl", hash = "sha256:e454a0244a74ad91cc231bc7759a10445ae33709c235a0b25c56d2ed1e02ee13" },
-    { url = "https://pypi.nvidia.com/warp-lang/warp_lang-1.11.0.dev20251021-py3-none-manylinux_2_34_aarch64.whl", hash = "sha256:6c2aa745a6a43934b02e6ac9c69d5427c80a4cf075a09e2d4a227a76323ff58d" },
-    { url = "https://pypi.nvidia.com/warp-lang/warp_lang-1.11.0.dev20251021-py3-none-win_amd64.whl", hash = "sha256:c808b1b0e81808bbaaf13e5a48bd04967dd03f4e6c293680802a6d086133165a" },
+    { url = "https://pypi.nvidia.com/warp-lang/warp_lang-1.11.0.dev20251027-py3-none-macosx_11_0_arm64.whl", hash = "sha256:ce02774f04d1c5fbb147c457081183499ee9fcae0ce04ca72245ef6e3ad429f4" },
+    { url = "https://pypi.nvidia.com/warp-lang/warp_lang-1.11.0.dev20251027-py3-none-manylinux_2_28_x86_64.whl", hash = "sha256:03907be5580a9b7cb76217fc691ba49cee5de6556ad379cfaf2878844d9bb821" },
+    { url = "https://pypi.nvidia.com/warp-lang/warp_lang-1.11.0.dev20251027-py3-none-manylinux_2_34_aarch64.whl", hash = "sha256:1e42a226f9087a3a8ae383e3031d7855b360eb25a1b75cb9ee90ac631da897d5" },
+    { url = "https://pypi.nvidia.com/warp-lang/warp_lang-1.11.0.dev20251027-py3-none-win_amd64.whl", hash = "sha256:1195827b96ad3c9db9e8994d15750e6014f4ee5098ba6cfaeef4b5cb7b652fd0" },
 ]
 
 [[package]]
